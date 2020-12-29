@@ -1,5 +1,6 @@
 #include "processPointClouds.h"
 
+
 // Constructor
 template <typename PointT>
 ProcessPointClouds<PointT>::ProcessPointClouds():sumtime_(0)
@@ -18,7 +19,6 @@ void ProcessPointClouds<PointT>::numPoints(typename pcl::PointCloud<PointT>::Ptr
 template <typename PointT>
 typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(typename pcl::PointCloud<PointT>::Ptr cloud, Eigen::Vector2f minPoint, Eigen::Vector2f maxPoint)
 {
-
     auto startTime=std::chrono::steady_clock::now();
     std::cout<<"  Filtered :"<<std::endl;
     std::cout<<"   - PointCloud before filtering: "<<cloud->width*cloud->height<<" data points ("<<pcl::getFieldsList(*cloud)<<")."<<std::endl;
@@ -45,9 +45,6 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::FilterCloud(ty
     std::cout<< "   - PointCloud after filtering "<<filteredCloudY->width*filteredCloudY->height<<" data points("<<pcl::getFieldsList(*filteredCloudY)<<")."<<std::endl;
     std::cout<<"   - Point cloud filtering took "<<elapsedTime.count()<<" milliseconds."<<std::endl;
     //std::cout<<"   -"<<sumtime_.count()<<std::endl;
-
-    //pcl::PCDWriter writer;
-    //writer.write<PointT>("../exhibition_out/filtered.pcd",*filteredCloudY,false);
 
     return filteredCloudY;
 }
@@ -82,8 +79,8 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::SegmentPlane(t
     //Extract the inliers
     extract.setInputCloud(cloud);
     extract.setIndices(inliers);
-    extract.setNegative(false);  
-    extract.filter(*seg_cloud);
+    //extract.setNegative(false);  
+    //extract.filter(*seg_cloud);
 
     extract.setNegative(true);  //将索引对应的的点丢掉，保留剩余的点
     extract.filter(*rem_cloud);
@@ -91,10 +88,10 @@ typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::SegmentPlane(t
     /*
     pcl::PCDWriter writer;
     std::stringstream segfile;
-    segfile<<"../ground_cloud/"<<filename<<"_ground.pcd";
+    segfile<<file<<"_ground.pcd";
     writer.write<PointT>(segfile.str(),*seg_cloud,false);
     std::stringstream remfile;
-    remfile<<"../rem_cloud/"<<filename<<"_rem.pcd";
+    remfile<<file<<"_rem.pcd";
     writer.write<PointT>(remfile.str(),*rem_cloud,false);
     */
 
@@ -121,15 +118,19 @@ void euclideanClusteringHelper(int index, const typename pcl::PointCloud<PointT>
     std::vector<int> nearby = tree->search(index, distanceTolerance);
 
     int unprocessed_points = 0;
-    for (int id : nearby) {
-        if (processed[id] != true) {
+    for (int id : nearby)
+    {
+        if (processed[id] != true)
+        {
             unprocessed_points += 1; 
         }
     }  
     std::cout << "\t\t" << unprocessed_points << "/" << nearby.size() << " : " << " left to process." << std::endl;
 
-    for (int id : nearby) {
-        if (processed[id] != true) {
+    for (int id : nearby)
+    {
+        if (processed[id] != true) 
+        {
             euclideanClusteringHelper(id, cloud, cluster, processed, tree, distanceTolerance);
         }
     }
@@ -171,12 +172,14 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename 
 template<typename PointT>
 std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, std::string filename, float distanceTolerance,  int minSize, int maxSize, bool usePCLClustering)
 {
-    std::cout<<"  Obstacle :"<<std::endl;
+     std::cout<<"  Obstacle :"<<std::endl;
+    /*
     //std::cout<<minSize<<std::endl;
     std::stringstream sfilename;
     sfilename<<"../obstacle_out/"<<filename<<".txt";
 
-    //std::ofstream file(sfilename.str(), std::ios::out | std::ios::app);
+    std::ofstream file(sfilename.str(), std::ios::out | std::ios::app);
+    */
 
     //double dcos=std::cos(0.138);
     //double dsin=std::sin(0.138);
@@ -202,6 +205,7 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
 
         for (pcl::PointIndices getIndices : clusterIndices)
         {
+            std::vector <double> detec_res;
             typename pcl::PointCloud<PointT>::Ptr cloudCluster(new pcl::PointCloud<PointT>);
 
             for (int index : getIndices.indices)     //getIndices.indices聚类后一簇点云的索引
@@ -232,7 +236,7 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
             {
                 continue;
             }
-
+            
             typename pcl::PointXYZ centerPoint;
             typename pcl::PointXYZ rcenterPoint;
 
@@ -242,6 +246,10 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
 
             rcenterPoint = cusrotationpoint(centerPoint);
 
+            double l= maxPoint.x - minPoint.x;
+            double w= maxPoint.y - minPoint.y;
+            double h= maxPoint.z - minPoint.z;
+
             pcl::PointXYZ  point1(minPoint.x, minPoint.y, minPoint.z);   
             pcl::PointXYZ  point2(maxPoint.x, minPoint.y, minPoint.z);
             pcl::PointXYZ  point3(minPoint.x, maxPoint.y, minPoint.z);
@@ -250,13 +258,16 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
             pcl::PointXYZ  point6(maxPoint.x, minPoint.y, maxPoint.z);
             pcl::PointXYZ  point7(minPoint.x, maxPoint.y, maxPoint.z);
             pcl::PointXYZ  point8(maxPoint.x, maxPoint.y, maxPoint.z);
+            /*
             pcl::PointXYZ  rpoint1=cusrotationpoint(point1);
             pcl::PointXYZ  rpoint2=cusrotationpoint(point2);
             pcl::PointXYZ  rpoint3=cusrotationpoint(point3);
-
-            double l= maxPoint.x - minPoint.x;
-            double w= maxPoint.y - minPoint.y;
-            double h= maxPoint.z - minPoint.z;
+            pcl::PointXYZ  rpoint4=cusrotationpoint(point4);
+            pcl::PointXYZ  rpoint5=cusrotationpoint(point5);
+            pcl::PointXYZ  rpoint6=cusrotationpoint(point6);
+            pcl::PointXYZ  rpoint7=cusrotationpoint(point7);
+            pcl::PointXYZ  rpoint8=cusrotationpoint(point8);
+            */
             
             if(Trickwork(point8))     //右上角的误检
             {
@@ -267,24 +278,25 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
             {
                 continue;
             }
-            std::cout<<"   ["<<i<<"] "<<maxPoint<<" "<<minPoint<<std::endl;
-            std::cout<<"   ["<<i<<"] Center point: "<<centerPoint<<std::endl;         
-            //rcenterPoint.x = dcos*centerPoint.x - dsin*centerPoint.z;
-            //rcenterPoint.y = centerPoint.y;
-            //rcenterPoint.z = dsin*centerPoint.x + dcos*centerPoint.z;  
-            std::cout<<"   ["<<i<<"] Rotation Center point: "<<rcenterPoint<<std::endl;
-
-            std::cout<<point1<<" "<<point2<<" "<<point3<<" "<<point4<<std::endl;
-            std::cout<<point5<<" "<<point6<<" "<<point7<<" "<<point8<<std::endl;
-            std::cout<<l<<" "<<w<<" "<<h<<std::endl;
-
+            
             cloudCluster->width = cloudCluster->points.size();
             cloudCluster->height = 1;
             cloudCluster->is_dense = true;
             clusters.push_back(cloudCluster);
 
-            std::cout << "   ["<<i<<"] PointCloud representing the cluster: " << cloudCluster->points.size() << " data points." << std::endl;
+            /*
+            if(centerPoint.x<-11.0 && centerPoint.y>39.0)
+            {
+                continue;
+            }
+            */
+            std::cout<<"   ["<<i<<"] "<<maxPoint<<" "<<minPoint<<std::endl;
 
+            std::cout<<"   ["<<i<<"] Center point: "<<centerPoint<<std::endl;
+            std::cout<<"   ["<<i<<"] Shape: "<<l<<" "<<w <<" "<<h<<std::endl;
+            std::cout<<"   ["<<i<<"] Rotation Center point: "<<rcenterPoint<<std::endl;
+            std::cout<<"   ["<<i<<"] PointCloud representing the cluster: " << cloudCluster->points.size() << " data points." << std::endl;
+            
             /*
             file<<centerPoint.x<<" "<<centerPoint.y<<" "<<centerPoint.z<<" "<<l<<" "<<w<<" "<<h<<" "<<rcenterPoint.x<<" "<<rcenterPoint.y<<" "<<rcenterPoint.z<<" "
             <<rpoint8.x<<" "<<rpoint8.y<<" "<<rpoint8.z<<" "
@@ -297,8 +309,47 @@ std::vector<typename pcl::PointCloud<PointT>::Ptr> ProcessPointClouds<PointT>::C
             <<rpoint3.x<<" "<<rpoint3.y<<" "<<rpoint3.z<<std::endl;
             */
 
+            detec_res.push_back(centerPoint.x);
+            detec_res.push_back(centerPoint.y);
+            detec_res.push_back(centerPoint.z);
+            detec_res.push_back(l);
+            detec_res.push_back(w);
+            detec_res.push_back(h);
+            detec_res.push_back(rcenterPoint.x);
+            detec_res.push_back(rcenterPoint.y);
+            detec_res.push_back(rcenterPoint.z);
+
+            /*
+            detec_res.push_back(rpoint8.x);
+            detec_res.push_back(rpoint8.y);
+            detec_res.push_back(rpoint8.z);
+            detec_res.push_back(rpoint6.x);
+            detec_res.push_back(rpoint6.y);
+            detec_res.push_back(rpoint6.z);
+            detec_res.push_back(rpoint5.x);
+            detec_res.push_back(rpoint5.y);
+            detec_res.push_back(rpoint5.z);
+            detec_res.push_back(rpoint7.x);
+            detec_res.push_back(rpoint7.y);
+            detec_res.push_back(rpoint7.z);
+            detec_res.push_back(rpoint4.x);
+            detec_res.push_back(rpoint4.y);
+            detec_res.push_back(rpoint4.z);
+            detec_res.push_back(rpoint2.x);
+            detec_res.push_back(rpoint2.y);
+            detec_res.push_back(rpoint2.z);
+            detec_res.push_back(rpoint1.x);
+            detec_res.push_back(rpoint1.y);
+            detec_res.push_back(rpoint1.z);
+            detec_res.push_back(rpoint3.x);
+            detec_res.push_back(rpoint3.y);
+            detec_res.push_back(rpoint3.z);
+            */
+
             i+=1;
-        }   
+
+            obstacles_.emplace_back(detec_res);
+        }  
     }
     else  // use custom clustering algorithm
     {
@@ -348,61 +399,49 @@ void ProcessPointClouds<PointT>::savePcd(typename pcl::PointCloud<PointT>::Ptr c
 
 
 template<typename PointT>
-typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::loadPcd(std::string file, bool scene_test)
+typename pcl::PointCloud<PointT>::Ptr ProcessPointClouds<PointT>::loadPcd(std::string file)
 {
     sumtime_=std::chrono::duration<double, std::milli> (0);
 
     typename pcl::PointCloud<PointT>::Ptr cloud (new pcl::PointCloud<PointT>);
-    
+
+    /*
+    pcl::PCLPointCloud2::Ptr cloud_blob(new pcl::PCLPointCloud2);
+    pcl::PCDReader reader;
+    reader.read(file,*cloud_blob);
+    pcl::fromPCLPointCloud2(*cloud_blob,*cloud);
+
+    */
     if (pcl::io::loadPCDFile<PointT> (file, *cloud) == -1)
         PCL_ERROR("Couldn't read file \n");
 
     std::cout << "Loaded " << cloud->points.size () << " data points from " + file << std::endl;
 
-    if (scene_test==true)
-    {
-        for (size_t i = 0; i < cloud->points.size (); i++)
-        {
-            PointT tmp=cloud->points[i];
-            //std::cout<<tmp<<"   "<<cloud->points[i].intensity<<std::endl;
-            cloud->points[i].x=tmp.y;
-            cloud->points[i].y=-tmp.x;
-        }
-
-            return cloud;
-    }
-    else
-    {
-        /*
-        pcl::PCLPointCloud2::Ptr cloud_blob(new pcl::PCLPointCloud2);
-        pcl::PCDReader reader;
-        reader.read(file,*cloud_blob);
-        pcl::fromPCLPointCloud2(*cloud_blob,*cloud);
-
-        */
-        return cloud;
-    }
+    return cloud;
 }
 
 
 template<typename PointT>
-std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::string dataPath )
+std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::string dataPath)
 {
-
     std::vector<boost::filesystem::path> paths(boost::filesystem::directory_iterator{dataPath}, boost::filesystem::directory_iterator{});
 
-    //sort(paths.begin(), paths.end(), sort_functor());  // sorting files in ascending order so playback is chronological
-    sort(paths.begin(), paths.end());  // sorting files in ascending order so playback is chronological
+    sort(paths.begin(), paths.end(), sort_functor());  // sorting files in ascending order so playback is chronological
 
     //sort(paths.begin(), paths.end());  
     return paths;
 }
 
-
 template<typename PointT>
 void ProcessPointClouds<PointT>::showalltime()
 {
     std::cout<<"---------------------- sum time: "<<sumtime_.count()<<" ---------------------- "<<std::endl;
+}
+
+template<typename PointT>
+std::vector< std::vector<double>> ProcessPointClouds<PointT>::returnres()
+{
+    return obstacles_;
 }
 
 

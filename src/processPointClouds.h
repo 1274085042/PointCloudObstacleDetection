@@ -13,7 +13,6 @@
 #include <pcl/common/common.h>
 #include <pcl/filters/crop_box.h>
 #include <pcl/common/transforms.h>
-//#include <experimental/filesystem>
 #include <pcl/filters/voxel_grid.h>
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/extract_indices.h>
@@ -30,18 +29,14 @@ class ProcessPointClouds
 private:
     //std::chrono::milliseconds  sumtime_;
     std::chrono::duration<double, std::milli>  sumtime_ ;
+    std::vector<std::vector <double>> obstacles_;
+
 public:
     ProcessPointClouds();
 
     void numPoints(typename pcl::PointCloud<PointT>::Ptr cloud);
 
     typename pcl::PointCloud<PointT>::Ptr FilterCloud(typename pcl::PointCloud<PointT>::Ptr cloud, Eigen::Vector2f minPoint, Eigen::Vector2f maxPoint);
-
-    std::unordered_set<int> Ransac2D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol);
-
-    std::unordered_set<int> Ransac3D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol);
-
-    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SeparateClouds(pcl::PointIndices::Ptr inliers, typename pcl::PointCloud<PointT>::Ptr cloud);
 
     typename pcl::PointCloud<PointT>::Ptr SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold,  std::string filename);
 
@@ -53,7 +48,7 @@ public:
 
     void savePcd(typename pcl::PointCloud<PointT>::Ptr cloud, std::string file);
 
-    typename pcl::PointCloud<PointT>::Ptr loadPcd(std::string file , bool  scene_test=false);
+    typename pcl::PointCloud<PointT>::Ptr loadPcd(std::string file);
 
     std::vector<boost::filesystem::path> streamPcd(std::string dataPath);
 
@@ -82,7 +77,9 @@ public:
         {
             return false;
         }  
-    };
+    }
+    
+    std::vector< std::vector<double>> returnres();
 
     ~ProcessPointClouds();
 
@@ -94,6 +91,11 @@ struct sort_functor
     {
         return std::stoi(boost::filesystem::basename(a)) < std::stoi(boost::filesystem::basename(b));  
     }
+};
+
+struct points8
+{
+    pcl::PointXYZ p1_, p2_, p3_, p4_, p5_, p6_, p7_, p8_;
 };
 
 

@@ -13,7 +13,7 @@ find_package(PCL 1.2 REQUIRED)
 find_package(pybind11 REQUIRED)
 
 
-include_directories(${PCL_INCLUDE_DIRS} /home/lfq/pybind11/build/mock_install/include/)
+include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
