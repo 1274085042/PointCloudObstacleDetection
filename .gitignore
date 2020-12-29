@@ -1,7 +1,6 @@
 .VSCodeCounter
-!build
-build/*
-!build/command.sh
+
+build/
 
 tools/pcdxyzi_pcdxyz/build
 tools/point_clik/build

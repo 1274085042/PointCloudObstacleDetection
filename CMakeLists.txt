@@ -23,4 +23,3 @@ list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 pybind11_add_module(traditionalpointcloud src/traditionalpointcloud.cpp src/render/render.cpp src/processPointClouds.cpp )
 target_link_libraries (traditionalpointcloud  PUBLIC pybind11::module ${PCL_LIBRARIES})
-

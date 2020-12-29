@@ -98,5 +98,4 @@ struct points8
     pcl::PointXYZ p1_, p2_, p3_, p4_, p5_, p6_, p7_, p8_;
 };
 
-
 #endif /* PROCESSPOINTCLOUDS_H_ */

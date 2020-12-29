@@ -5,7 +5,6 @@
 template <typename PointT>
 ProcessPointClouds<PointT>::ProcessPointClouds():sumtime_(0)
 {
-
 }
 
 
@@ -432,11 +431,13 @@ std::vector<boost::filesystem::path> ProcessPointClouds<PointT>::streamPcd(std::
     return paths;
 }
 
+
 template<typename PointT>
 void ProcessPointClouds<PointT>::showalltime()
 {
     std::cout<<"---------------------- sum time: "<<sumtime_.count()<<" ---------------------- "<<std::endl;
 }
+
 
 template<typename PointT>
 std::vector< std::vector<double>> ProcessPointClouds<PointT>::returnres()
