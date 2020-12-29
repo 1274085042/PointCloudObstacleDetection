@@ -40,9 +40,6 @@ public:
     typename pcl::PointCloud<PointT>::Ptr SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold,  std::string filename);
 
     //std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold);
-    //void euclideanClusteringHelper(int index, const typename pcl::PointCloud<PointT>::Ptr cloud, std::vector<int>& cluster, std::vector<bool>& processed, kdTree<PointT>* tree, float distanceTolerance);
-    
-    //std::vector<typename pcl::PointCloud<PointT>::Ptr> euclideanClustering(typename pcl::PointCloud<PointT>::Ptr cloud, kdTree<PointT>* tree, float distanceTol);
 
     std::vector<typename pcl::PointCloud<PointT>::Ptr> Clustering(typename pcl::PointCloud<PointT>::Ptr cloud, std::string filename, float distanceTolerance,int minSize=10, int maxSize=2000,  bool usePCLClustering=true);
 
