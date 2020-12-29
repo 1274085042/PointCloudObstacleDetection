@@ -56,6 +56,19 @@ MaxClusterSize 设置为2000
 ![][image10]  
 *<font size=3>欧式聚类效果</font>*  
 
+# 编译（Ubuntu16.04）  
+## 依赖
+* CMake >=3.12
+* GCC
+* boost 1.58.0
+* pcl (sudo apt install libpcl-dev)  
+## 使用  
+```
+$> mkdir build && cd build
+$> cmake ..
+$> make
+$> bash command.sh
+```  
 
 [//]:#(reference)
 [image1]:./exhibition/PointCloudDetection.gif
