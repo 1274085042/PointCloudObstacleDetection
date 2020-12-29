@@ -17,7 +17,9 @@ $> python3.6
 $> import traditionalpointcloud
 $> traditionalpointcloud.obstacledetection(filepath)
 ```
-注意：**python3.6是编译pybind11使用的版本**
-  
+注意：**python3.6是编译pybind11使用的版本**  
+
+![][image1]
 
 [//]:#(reference)
+[image1]:./exhibition/python_interface.PNG
