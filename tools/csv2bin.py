@@ -1,8 +1,6 @@
 import numpy as np
 
-
 tmp = np.loadtxt('2020-11-29-11-19.csv', dtype=np.str, delimiter=",")
-
 
 data = tmp[1:].astype(np.float32)
 print(data.shape, type(data))
