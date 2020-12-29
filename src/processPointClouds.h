@@ -37,12 +37,6 @@ public:
 
     typename pcl::PointCloud<PointT>::Ptr FilterCloud(typename pcl::PointCloud<PointT>::Ptr cloud, Eigen::Vector2f minPoint, Eigen::Vector2f maxPoint);
 
-    std::unordered_set<int> Ransac2D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol);
-
-    std::unordered_set<int> Ransac3D(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceTol);
-
-    std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SeparateClouds(pcl::PointIndices::Ptr inliers, typename pcl::PointCloud<PointT>::Ptr cloud);
-
     typename pcl::PointCloud<PointT>::Ptr SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold,  std::string filename);
 
     //std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> SegmentPlane(typename pcl::PointCloud<PointT>::Ptr cloud, int maxIterations, float distanceThreshold);
@@ -95,6 +89,5 @@ struct sort_functor
         return std::stoi(boost::filesystem::basename(a)) < std::stoi(boost::filesystem::basename(b));  
     }
 };
-
 
 #endif /* PROCESSPOINTCLOUDS_H_ */
